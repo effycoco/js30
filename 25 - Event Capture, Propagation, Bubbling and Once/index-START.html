@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding JavaScript's Capture</title>
+</head>
+
+<body class="bod">
+
+  <div class="one">
+    <div class="two">
+      <div class="three">
+      </div>
+    </div>
+  </div>
+
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    div {
+      width: 100%;
+      padding: 100px;
+    }
+
+    .one {
+      background: thistle;
+    }
+
+    .two {
+      background: mistyrose;
+    }
+
+    .three {
+      background: coral;
+    }
+  </style>
+
+  <button></button>
+  <script>
+    const divs = document.querySelectorAll('div');
+    function logText(e) {
+      console.log(this.classList.value);
+      e.stopPropagation();// stop bubbling
+      // 添加后只输出three，即只有最内层的事件被触发了，不触发外层parents的事件
+      // 与capture: true结合使用时，只会输出one
+    }
+    divs.forEach(div =>
+      div.addEventListener('click', logText, { capture: true, once: true }))
+      // 这里把logText替换成箭头函数会报错，为什么
+
+      // 点击内层div时，依次log 'three' 'two' 'one'，
+      // 说明三个div绑定的事件从内向外依次被唤起 - bubbling
+      // 这是很自然的，元素的event listener会监听子元素上发生的事件，
+      // 因为子元素也是元素的一部分
+
+      // 整个过程是浏览器先从上至下捕获事件capture from top to down, ripple down
+
+      // capture默认为false，把capture改为true时，
+      // 输出变成了one two three，说明事件从外向内依次唤起
+
+      // once:true 的作用是触发一次后就移除事件监听器
+
+
+  </script>
+</body>
+
+</html>
